@@ -50,7 +50,24 @@ app.post('/shopping-list', jsonParser, (req, res) => {
 
 app.get('/recipes', (req, res) => {
   res.json(Recipes.get());
-})
+});
+
+// since the data from request, so we need to use jsonParse to make them to json
+app.post('/recipes', jsonParser, (req,res) => {
+
+  const requestField = ['name','ingredients'];
+  for (let i =0; i<requestField.length; i ++) {
+    const field = requestField[i];
+    if (!(field in req.body)) {
+      const message = `${field} field is missing`;
+      console.error(message);
+      return res.status(400).send(message);
+    }
+  }
+  const item = Recipes.create(req.body.name,req.body.ingredients);
+  res.status(201).json(item);
+
+});
 
 app.listen(process.env.PORT || 8080, () => {
   console.log(`Your app is listening on port ${process.env.PORT || 8080}`);
